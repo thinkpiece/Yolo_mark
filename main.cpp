@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 		if (argc >= 4 && (train_filename == "cap_video" || train_filename == "cap_video_backward")) {
 			const std::string videofile = synset_filename;
 			cv::VideoCapture cap(videofile);
-			const int fps = cap.get(CV_CAP_PROP_FPS);
+			const int fps = cap.get(CAP_PROP_FPS);
             int frame_counter = 0, image_counter = 0;
             int backward = (train_filename == "cap_video_backward") ? 1 : 0;
             if (backward) image_counter = 99999999; // 99M
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 		cv::String images_path_cv = images_path;
 		std::vector<cv::String> filenames_in_folder_cv;
 		glob(images_path_cv, filenames_in_folder_cv); // void glob(String pattern, std::vector<String>& result, bool recursive = false);
-		for (auto &i : filenames_in_folder_cv) 
+		for (auto &i : filenames_in_folder_cv)
 			filenames_in_folder.push_back(i);
 
 		std::vector<std::string> jpg_filenames_path;
@@ -217,10 +217,10 @@ int main(int argc, char *argv[])
 			std::string const ext = i.substr(i.find_last_of(".") + 1);
 			std::string const filename_without_ext = filename.substr(0, filename.find_last_of("."));
 
-			if (ext == "jpg" || ext == "JPG" || 
+			if (ext == "jpg" || ext == "JPG" ||
 				ext == "jpeg" || ext == "JPEG" ||
 				ext == "bmp" || ext == "BMP" ||
-				ext == "png" || ext == "PNG" || 
+				ext == "png" || ext == "PNG" ||
 				ext == "ppm" || ext == "PPM")
 			{
 				jpg_filenames_without_ext.push_back(filename_without_ext);
@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
 			std::sort(sorted_names_without_ext.begin(), sorted_names_without_ext.end());
 			for (size_t i = 1; i < sorted_names_without_ext.size(); ++i) {
 				if (sorted_names_without_ext[i - 1] == sorted_names_without_ext[i]) {
-					std::cout << "Error: Can't create " << sorted_names_without_ext[i] << 
+					std::cout << "Error: Can't create " << sorted_names_without_ext[i] <<
 						".txt file for several images with different extensions but with the same filename: "
 						<< sorted_names_without_ext[i] << std::endl;
 					// print duplicate images
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
 			txt_filenames.begin(), txt_filenames.end(),
 			difference_filenames.begin());
 		difference_filenames.resize(dif_it_end - difference_filenames.begin());
-				
+
 		auto inter_it_end = std::set_intersection(jpg_filenames_without_ext.begin(), jpg_filenames_without_ext.end(),
 			txt_filenames.begin(), txt_filenames.end(),
 			intersect_filenames.begin());
@@ -403,7 +403,7 @@ int main(int argc, char *argv[])
 								relative_center_x << " " << relative_center_y << " " <<
 								relative_width << " " << relative_height << std::endl;
 						}
-						
+
 						// store [path/image name.jpg] to train.txt
 						auto it = std::find(difference_filenames.begin(), difference_filenames.end(), filename_without_ext);
 						if (it != difference_filenames.end())
@@ -423,7 +423,7 @@ int main(int argc, char *argv[])
 				for (size_t i = 0; i < preview_number && (i + trackbar_value) < jpg_filenames_path.size(); ++i)
 				{
 					Mat img = imread(jpg_filenames_path[trackbar_value + i]);
-					// check if the image has been loaded successful to prevent crash 
+					// check if the image has been loaded successful to prevent crash
 					if (img.cols == 0)
 					{
 						continue;
@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
 								coord.id = -1;
 								ss >> coord.id;
 								if (coord.id < 0) continue;
-								float relative_coord[4] = { -1, -1, -1, -1 };  // rel_center_x, rel_center_y, rel_width, rel_height                          
+								float relative_coord[4] = { -1, -1, -1, -1 };  // rel_center_x, rel_center_y, rel_width, rel_height
 								for (size_t i = 0; i < 4; i++) if(!(ss >> relative_coord[i])) continue;
 								for (size_t i = 0; i < 4; i++) if (relative_coord[i] < 0) continue;
 								coord.abs_rect.x = (relative_coord[0] - relative_coord[2] / 2) * (float)full_image_roi.cols;
@@ -482,7 +482,7 @@ int main(int argc, char *argv[])
 						line(dst_roi, Point2i(80, 88), Point2i(85, 93), Scalar(50, 200, 100), 2);
 						line(dst_roi, Point2i(85, 93), Point2i(93, 85), Scalar(50, 200, 100), 2);
 					}
-                    
+
 				}
 				std::cout << " trackbar_value = " << trackbar_value << std::endl;
 
@@ -490,8 +490,8 @@ int main(int argc, char *argv[])
 
 				marks_changed = false;
 
-				rectangle(frame, prev_img_rect, Scalar(100, 100, 100), CV_FILLED);
-				rectangle(frame, next_img_rect, Scalar(100, 100, 100), CV_FILLED);
+				rectangle(frame, prev_img_rect, Scalar(100, 100, 100), FILLED);
+				rectangle(frame, next_img_rect, Scalar(100, 100, 100), FILLED);
 			}
 
 			trackbar_value = min(max(0, trackbar_value), (int)jpg_filenames_path.size() - 1);
@@ -681,7 +681,7 @@ int main(int argc, char *argv[])
 
 				rectangle(full_image_roi, i.abs_rect, color_rect, mark_line_width);
 			}
-            
+
             // remove selected rect
             if (delete_selected) {
                 delete_selected = false;
@@ -777,7 +777,7 @@ int main(int argc, char *argv[])
 
 			if (pressed_key >= 0)
 				for (int i = 0; i < 5; ++i) cv::waitKey(1);
-			
+
 			if (exit_flag) break;	// exit after saving
 			if (pressed_key == 27 || pressed_key == 1048603) exit_flag = true;// break;  // ESC - save & exit
 
